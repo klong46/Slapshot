@@ -1,7 +1,7 @@
-name=Template
-author=You, Inc.
-description=A basic game template.
-bundleID=com.yourcompany.TemplateGame
+name=Slapshot
+author=Kyle Long
+description=Hockey!
+bundleID=com.hifigames.slapshot
 version=1.0
 buildNumber=100
 imagePath=SystemAssets

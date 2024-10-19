@@ -1,3 +1,5 @@
 slapshot.pdx
 slapshot.pdx/*
 .DS_STORE
+.vscode
+.vscode/*
