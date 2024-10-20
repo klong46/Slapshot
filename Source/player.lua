@@ -9,59 +9,67 @@ local IMG_END = 100
 local IMG_PREFIX = 'img/player/'
 local ROT_SPEED = 2
 
-local function getDegreesOfRotation(imgNum)
-    return math.rad((imgNum+3) * 3.6) -- convert from 0-100 imgNum to radians
+local function getDegreesOfRotation(imageNum)
+    return math.rad((imageNum+3) * 3.6) -- convert from 0-100 imageNum to radians
 end
 
 local function convertImageNumToVector(degreesOfRotation)
     return geo.vector2D.new(math.sin(degreesOfRotation), math.cos(degreesOfRotation))
 end
 
+local function setMagnitude(rot)
+    if rot == 0 then return rot end
+    -- negative for force direction to be correct
+    return -rot
+end
+
+-- TODO: this sucks
+local function getImage(imageNum)
+    if imageNum < 10 then
+        return gfx.image.new(IMG_PREFIX..'000'..imageNum)
+    end
+    if imageNum < 100 then
+        return gfx.image.new(IMG_PREFIX..'00'..imageNum)
+    end
+    return gfx.image.new(IMG_PREFIX..'0'..imageNum)
+end
+
+local function getImageNum(rotation, imageNum)
+    rotation = math.floor(rotation*ROT_SPEED)
+    return (imageNum + rotation) % IMG_END
+end
+
 function Player:init(x, y, tagNum)
     Player.super.init(self)
+    self.rotation = 0
     self.active = false
     self.imageNum = IMG_START
     self.rotationVector = convertImageNumToVector(getDegreesOfRotation(self.imageNum))
-    self.rotationMagnitude = nil
-    self:setImage(self:getImage())
+    self.rotationMagnitude = 0
+    self:setImage(getImage(self.imageNum))
     self:moveTo(x, y)
-    self:setCollideRect(67, 35, 27, 50)
+    self:setCollideRect(67, 35, 27, 50) -- TODO: no magic
     self:setTag(tagNum)
-    -- self.body = PlayerBody(x, y)
     self:setZIndex(1)
     self:add()
 end
 
-function Player:setNewImg(rotation)
-    rotation = math.floor(rotation*ROT_SPEED)
-    self.imageNum = (self.imageNum + rotation) % IMG_END
-    self:setImage(self:getImage())
-end
-
-function Player:getImage()
-    if self.imageNum < 10 then
-        return gfx.image.new(IMG_PREFIX..'000'..self.imageNum)
-    end
-    if self.imageNum < 100 then
-        return gfx.image.new(IMG_PREFIX..'00'..self.imageNum)
-    end
-    return gfx.image.new(IMG_PREFIX..'0'..self.imageNum)
-end
-
 function Player:rotate(rotation)
-    self:setNewImg(rotation)
+    self.imageNum = getImageNum(rotation, self.imageNum)
+    self:setImage(getImage(self.imageNum))
     local degreesOfRotation = getDegreesOfRotation(self.imageNum)
     self.rotationVector = convertImageNumToVector(degreesOfRotation)
-    self.rotationMagnitude = rotation*-1
+    self.rotationMagnitude = setMagnitude(rotation)
     local rect = self:getCollideRect()
-    print(math.cos(degreesOfRotation))
+    -- TODO: no magic
     self:setCollideRect(40 + (27 * math.cos(degreesOfRotation)), (35 + (-30 * math.sin(degreesOfRotation))), rect.w, 30 + (20 * math.abs(math.cos(degreesOfRotation))))
 end
 
 function Player:update()
     Player.super.update(self)
-    if Ticks ~= 0 and self.active then
-        self:rotate(Ticks)
+    if self.rotation ~= 0 and self.active then
+        -- negative to turn in same direction as crank
+        self:rotate(-self.rotation)
     elseif self.rotationMagnitude ~= 0 then
         self.rotationMagnitude = 0
     end

@@ -3,30 +3,29 @@ import "CoreLibs/sprites"
 import "CoreLibs/crank"
 import "player"
 import "puck"
-import "playerBody"
 
 -- global constants
 PLAYER_BODY_TAG = 99
 PUCK_TAG = 98
 
--- global variables
-Ticks = 0
-
 local gfx = playdate.graphics
 local slib = gfx.sprite
-local activePlayerIndex = 4
+local activePlayerIndex = 1
 local players = {}
+local PLAYER_ROWS = 3
+local PLAYER_COLS = 5
 
 -- create players
-for y = 0, 2, 1 do
-    for x = 0, 4, 1 do
+for y = 0, (PLAYER_ROWS-1), 1 do
+    for x = 0, (PLAYER_COLS-1), 1 do
         table.insert(players, Player((x * 80)+37, (y * 80)+31, x+y))
     end
 end
 players[activePlayerIndex].active = true
 
-Puck(40, 20)
+local puck = Puck(20, 55)
 
+-- button queries
 function playdate.rightButtonDown()
     players[activePlayerIndex].active = false
     activePlayerIndex = (activePlayerIndex % #players) + 1
@@ -43,7 +42,19 @@ function playdate.leftButtonDown()
     players[activePlayerIndex].active = true
 end
 
+function playdate.AButtonDown()
+    puck:remove()
+    puck = Puck(players[activePlayerIndex].x, players[activePlayerIndex].y + 25)
+end
+
+function playdate.BButtonDown()
+    puck:remove()
+    puck = Puck(math.random(20, 380), math.random(20,220))
+end
+
 function playdate.update()
     slib.update()
-    Ticks = playdate.getCrankTicks(50)
+    local ap = players[activePlayerIndex]
+    ap.rotation = playdate.getCrankTicks(50)
+    gfx.drawLine(ap.x - 10, ap.y + 20, ap.x + 20, ap.y + 20)
 end
