@@ -53,7 +53,6 @@ local function drawTrack(x, y, tagNum)
     local trackSprite = gfx.sprite.new(trackImage)
     trackSprite:moveTo(x,y)
     trackSprite:add()
-    print(trackSprite:getPosition())
     return trackSprite
 end
 

@@ -37,7 +37,14 @@ function Puck:update()
     -- check collisions
     local x, y, collisions = self:moveWithCollisions(self.x + self.velocity.dx ,self.y + self.velocity.dy)
     for i, collision in ipairs(collisions) do
-        if self:alphaCollision(collision.other) then
+        if collision.other:getTag() == GOAL_TAG then
+            if (collision.normal.y == 1 and self.y > 140) or
+               (collision.normal.y == -1 and self.y < 140) then
+                self.velocity.y = self.velocity.y * -BOUNCE_VELOCITY
+            elseif collision.normal.x == 1 then
+                print("goal")
+            end
+        elseif self:alphaCollision(collision.other) then
             local magnitude = collision.other.rotationMagnitude
             local vector = collision.other.rotationVector
             if magnitude ~= 0 then
