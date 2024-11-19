@@ -11,19 +11,26 @@ local ICE_FRICTION = 0.05
 local COLLISION_DELAY_FRAMES = 2
 local CONTACT_JUMP = 0.25
 
-function Puck:init(x, y)
+function Puck:init(x, y, incrementScore)
     Puck.super.init(self)
     self.active = false
     self.velocity = geo.vector2D.new(0,0)
-    -- checks if collisions can be detected
+    self.incrementScore = incrementScore
     self.collisionDelay = 0
     self:setImage(puckImg)
     self.collisionResponse = "overlap"
     self:moveTo(x, y)
     self:setCollideRect(0, 0, self:getSize())
+    self:setGroups(PUCK_GROUP)
     self:setTag(PUCK_TAG)
     self.width, self.height = self:getSize()
     self:add()
+end
+
+function Puck:reset()
+    self.velocity.dx = 0
+    self.velocity.dy = 0
+    self:moveTo(200, 140)
 end
 
 function Puck:update()
@@ -41,8 +48,12 @@ function Puck:update()
             if (collision.normal.y == 1 and self.y > 140) or
                (collision.normal.y == -1 and self.y < 140) then
                 self.velocity.y = self.velocity.y * -BOUNCE_VELOCITY
-            elseif collision.normal.x == 1 then
-                print("goal")
+            elseif collision.normal.x == 1 and collision.other.side == OPPONENT_SIDE then
+                self.incrementScore(OPPONENT_SIDE)
+                self:reset()
+            elseif collision.normal.x == -1 and collision.other.side == PLAYER_SIDE then
+                self.incrementScore(PLAYER_SIDE)
+                self:reset()
             end
         elseif self:alphaCollision(collision.other) then
             local magnitude = collision.other.rotationMagnitude
