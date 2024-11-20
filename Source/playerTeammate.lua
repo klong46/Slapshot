@@ -3,19 +3,18 @@ import "teammate"
 class('PlayerTeammate').extends(Teammate)
 
 local MOVEMENT_SPEED = 3
-local TRACK_LENGTH
-
-local function trackStart(track)
-    return track.x - (TRACK_LENGTH/2)
-end
-
-local function trackEnd(track)
-    return track.x + (TRACK_LENGTH/2)
-end
 
 function PlayerTeammate:init(x, y, tagNum, trackLength)
     PlayerTeammate.super.init(self, x, y, tagNum, trackLength)
-    TRACK_LENGTH = trackLength
+    self.trackLength = trackLength
+end
+
+function PlayerTeammate:trackStart()
+    return self.track.x - (self.trackLength/2)
+end
+
+function PlayerTeammate:trackEnd()
+    return self.track.x + (self.trackLength/2)
 end
 
 function PlayerTeammate:update()
@@ -26,10 +25,10 @@ function PlayerTeammate:update()
     elseif self.rotationMagnitude ~= 0 then
         self.rotationMagnitude = 0
     end
-    if self.x > trackStart(self.track) and self.movement < 0 then
+    if self.x > self:trackStart() and self.movement < 0 then
         self:moveBy(self.movement * MOVEMENT_SPEED, 0)
     end
-    if self.x < trackEnd(self.track) and self.movement > 0 then
+    if self.x < self:trackEnd() and self.movement > 0 then
         self:moveBy(self.movement * MOVEMENT_SPEED, 0)
     end
 end

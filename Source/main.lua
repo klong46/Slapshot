@@ -18,8 +18,8 @@ OPPONENT_SIDE = 95
 PUCK_GROUP = 1
 TEAMMATE_GROUP = 2
 
--- local constants
-local TRACK_LENGTH = 150
+LONG_TRACK_LENGTH = 130
+SHORT_TRACK_LENGTH = 105
 
 local gfx = playdate.graphics
 local slib = gfx.sprite
@@ -56,18 +56,16 @@ end
 local puck = Puck(200, 140, incrementScore)
 
 -- player
-table.insert(players, PlayerTeammate(120, 28, 1, TRACK_LENGTH))
-table.insert(players, PlayerTeammate(270, 28 + 57.333, 2, TRACK_LENGTH))
-table.insert(players, PlayerTeammate(120, 28 + 57.333 + 57.333, 3, TRACK_LENGTH))
-table.insert(players, PlayerTeammate(270, 200, 4, TRACK_LENGTH))
--- local playerGoalie =  PlayerTeammate(400-30, 120, 5)
+table.insert(players, PlayerTeammate(100, 28, 1, LONG_TRACK_LENGTH))
+table.insert(players, PlayerTeammate(400-110, 28 + 57.333, 2, SHORT_TRACK_LENGTH))
+table.insert(players, PlayerTeammate(110, 28 + 57.333 + 57.333, 3, SHORT_TRACK_LENGTH))
+table.insert(players, PlayerTeammate(300, 200, 4, LONG_TRACK_LENGTH))
 
 -- opponent
-table.insert(opps, OpponentTeammate(120, 28 + 57.333, 1,TRACK_LENGTH))
-table.insert(opps, OpponentTeammate(120, 200, 2,TRACK_LENGTH, puck))
-table.insert(opps, OpponentTeammate(270, 28, 3,TRACK_LENGTH, puck))
-table.insert(opps, OpponentTeammate(270, 28 + 57.333 + 57.333, 4,TRACK_LENGTH, puck))
--- local opponentGoalie =  OpponentTeammate(30, 120, 1)
+table.insert(opps, OpponentTeammate(300, 28, 3, LONG_TRACK_LENGTH))
+table.insert(opps, OpponentTeammate(110, 28 + 57.333, 1, SHORT_TRACK_LENGTH))
+table.insert(opps, OpponentTeammate(400-110, 28 + 57.333 + 57.333, 4, SHORT_TRACK_LENGTH))
+table.insert(opps, OpponentTeammate(100, 200, 2, LONG_TRACK_LENGTH))
 
 players[activePlayerIndex].active = true
 

@@ -56,7 +56,6 @@ end
 
 function Teammate:init(x, y, tagNum, trackLength)
     Teammate.super.init(self)
-    self.trackLength = trac
     self.rotation = 0
     self.active = false
     self.imageNum = IMG_START
