@@ -26,8 +26,8 @@ local slib = gfx.sprite
 local activePlayerIndex = 1
 local players = {} -- player players lol
 local opps = {} -- opponent players
-local PLAYER_ROWS = 3
-local PLAYER_COLS = 5
+-- local PLAYER_ROWS = 3
+-- local PLAYER_COLS = 5
 
 -- create players
 -- for y = 0, (PLAYER_ROWS-1), 1 do
