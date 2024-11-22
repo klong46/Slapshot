@@ -118,11 +118,13 @@ function playdate.BButtonDown()
     puck.velocity.y = math.random(-25, 25)
 end
 
+playdate.display.setRefreshRate(50)
 function playdate.update()
     slib.update()
     local ap = players[activePlayerIndex]
-    ap.rotation = playdate.getCrankTicks(50)
+    ap.rotation = playdate.getCrankTicks(100)
     gfx.drawLine(ap.x - 10, ap.y + 20, ap.x + 20, ap.y + 20)
+    playdate.drawFPS()
 end
 
 -- puck:remove()

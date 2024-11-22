@@ -5,18 +5,19 @@ local geo = playdate.geometry
 class('Puck').extends(slib)
 
 local puckImg = gfx.image.new('img/small_puck')
-local HIT_FORCE = 2
+local HIT_FORCE = 1
 local BOUNCE_VELOCITY = 0.9
 local ICE_FRICTION = 0.05
-local COLLISION_DELAY_FRAMES = 2
-local CONTACT_JUMP = 0.25
+local CONTACT_JUMP = 0.1
+local magnitude
+local vector
+local direction
 
 function Puck:init(x, y, incrementScore)
     Puck.super.init(self)
     self.active = false
     self.velocity = geo.vector2D.new(0,0)
     self.incrementScore = incrementScore
-    self.collisionDelay = 0
     self:setImage(puckImg)
     self.collisionResponse = "overlap"
     self:moveTo(x, y)
@@ -36,11 +37,6 @@ end
 function Puck:update()
     Puck.super.update(self)
 
-    -- countdown until collision are detected again
-    if self.collisionDelay > 0 then
-        self.collisionDelay = self.collisionDelay - 1
-    end
-
     -- check collisions
     local x, y, collisions = self:moveWithCollisions(self.x + self.velocity.dx ,self.y + self.velocity.dy)
     for i, collision in ipairs(collisions) do
@@ -56,16 +52,18 @@ function Puck:update()
                 self:reset()
             end
         elseif self:alphaCollision(collision.other) then
-            local magnitude = collision.other.rotationMagnitude
-            local vector = collision.other.rotationVector
+            magnitude = collision.other.rotationMagnitude
+            vector = collision.other.rotationVector
             if magnitude ~= 0 then
-                local direction = magnitude / math.abs(magnitude)
-                self:moveBy(vector.dx * direction * self.width * CONTACT_JUMP, vector.dy * direction * self.height * CONTACT_JUMP)
-                if self.collisionDelay == 0 then
+                direction = magnitude / math.abs(magnitude)
+                print(magnitude)
+                if math.abs(magnitude) < 2 then
+                    self:moveBy(vector.dx * direction * self.width * CONTACT_JUMP, vector.dy * direction * self.height * CONTACT_JUMP)
+                    self.velocity.dx = vector.dx * magnitude
+                    self.velocity.dy = vector.dy * magnitude
+                else
                     self.velocity.dx = vector.dx * magnitude * HIT_FORCE
                     self.velocity.dy = vector.dy * magnitude * HIT_FORCE
-                    -- reset delay after collision
-                    self.collisionDelay = COLLISION_DELAY_FRAMES
                 end
             else
                 self.velocity = (self.velocity - (self.velocity:projectedAlong(vector) * 2)) * BOUNCE_VELOCITY

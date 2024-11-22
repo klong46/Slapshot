@@ -7,7 +7,7 @@ class('Teammate').extends(slib)
 local IMG_START = 97
 local IMG_END = 100
 local IMG_PREFIX = 'img/player/'
-local ROT_SPEED = 2
+local ROT_SPEED = 1
 local TRACK_WIDTH = 4
 
 local function getDegreesOfRotation(imageNum)
