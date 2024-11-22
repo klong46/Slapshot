@@ -36,7 +36,7 @@ local function getImage(imageNum)
 end
 
 local function getImageNum(rotation, imageNum)
-    rotation = math.floor(rotation*ROT_SPEED)
+    rotation = math.floor(rotation * ROT_SPEED)
     return (imageNum + rotation) % IMG_END
 end
 

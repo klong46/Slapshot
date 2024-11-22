@@ -5,13 +5,22 @@ local geo = playdate.geometry
 class('Puck').extends(slib)
 
 local puckImg = gfx.image.new('img/small_puck')
-local HIT_FORCE = 1
+local HIT_FORCE = 0.5
 local BOUNCE_VELOCITY = 0.9
 local ICE_FRICTION = 0.05
-local CONTACT_JUMP = 0.1
+local CONTACT_JUMP = 0.16
 local magnitude
 local vector
 local direction
+
+local function hitForce(mag)
+    if math.abs(mag) < 2 then
+        return mag * HIT_FORCE / 2
+    elseif math.abs(mag) > 4 then
+        return mag * HIT_FORCE * 1.5
+    end
+    return mag * HIT_FORCE
+end
 
 function Puck:init(x, y, incrementScore)
     Puck.super.init(self)
@@ -56,15 +65,9 @@ function Puck:update()
             vector = collision.other.rotationVector
             if magnitude ~= 0 then
                 direction = magnitude / math.abs(magnitude)
-                print(magnitude)
-                if math.abs(magnitude) < 2 then
-                    self:moveBy(vector.dx * direction * self.width * CONTACT_JUMP, vector.dy * direction * self.height * CONTACT_JUMP)
-                    self.velocity.dx = vector.dx * magnitude
-                    self.velocity.dy = vector.dy * magnitude
-                else
-                    self.velocity.dx = vector.dx * magnitude * HIT_FORCE
-                    self.velocity.dy = vector.dy * magnitude * HIT_FORCE
-                end
+                self:moveBy(vector.dx * direction * self.width * CONTACT_JUMP, vector.dy * direction * self.height * CONTACT_JUMP)
+                self.velocity.dx = self.velocity.dx + vector.dx * hitForce(magnitude)
+                self.velocity.dy = self.velocity.dy + vector.dy * hitForce(magnitude)
             else
                 self.velocity = (self.velocity - (self.velocity:projectedAlong(vector) * 2)) * BOUNCE_VELOCITY
             end
