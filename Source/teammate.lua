@@ -54,7 +54,7 @@ local function drawTrack(x, y, tagNum, trackLength)
     return trackSprite
 end
 
-function Teammate:init(x, y, tagNum, trackLength)
+function Teammate:init(x, y, tagNum, trackLength, movementSpeed)
     Teammate.super.init(self)
     self.rotation = 0
     self.active = false
@@ -63,6 +63,8 @@ function Teammate:init(x, y, tagNum, trackLength)
     self.rotationMagnitude = 0
     self.movement = 0 -- -1 = left, 1 = right
     self.track = drawTrack(x, y, tagNum, trackLength)
+    self.trackLength = trackLength
+    self.movementSpeed = movementSpeed
     self:setImage(getImage(self.imageNum))
     self:moveTo(x, y)
     self:setCollideRect(67, 35, 27, 50) -- TODO: no magic
@@ -70,6 +72,14 @@ function Teammate:init(x, y, tagNum, trackLength)
     self:setTag(tagNum)
     self:setZIndex(1)
     self:add()
+end
+
+function Teammate:trackStart()
+    return self.track.x - (self.trackLength/2)
+end
+
+function Teammate:trackEnd()
+    return self.track.x + (self.trackLength/2)
 end
 
 function Teammate:rotate(rotation)
@@ -83,3 +93,12 @@ function Teammate:rotate(rotation)
     self:setCollideRect(40 + (27 * math.cos(degreesOfRotation)), (35 + (-30 * math.sin(degreesOfRotation))), rect.w, 30 + (20 * math.abs(math.cos(degreesOfRotation))))
 end
 
+function Teammate:update()
+    Teammate.super.update(self)
+    if self.x > self:trackStart() and self.movement < 0 then
+        self:moveBy(self.movement * self.movementSpeed, 0)
+    end
+    if self.x < self:trackEnd() and self.movement > 0 then
+        self:moveBy(self.movement * self.movementSpeed, 0)
+    end
+end

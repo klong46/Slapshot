@@ -23,6 +23,7 @@ SHORT_TRACK_LENGTH = 105
 
 local gfx = playdate.graphics
 local slib = gfx.sprite
+local geo = playdate.geometry
 local activePlayerIndex = 1
 local players = {} -- player players lol
 local opps = {} -- opponent players
@@ -54,6 +55,7 @@ local incrementScore =  function (side)
 end
 
 local puck = Puck(200, 140, incrementScore)
+PuckPos = geo.point.new(puck.x, puck.y)
 
 -- player
 table.insert(players, PlayerTeammate(100, 28, 1, LONG_TRACK_LENGTH))
@@ -118,6 +120,18 @@ function playdate.BButtonDown()
     puck.velocity.y = math.random(-25, 25)
 end
 
+local function setClosestOpponent()
+    local closest = opps[1]
+    closest.isClosest = false
+    for i=2,#opps do
+        if opps[i].distanceToPuck < closest.distanceToPuck then
+            closest = opps[i]
+        end
+        opps[i].isClosest = false
+    end
+    closest.isClosest = true
+end
+
 playdate.display.setRefreshRate(50)
 function playdate.update()
     slib.update()
@@ -125,6 +139,8 @@ function playdate.update()
     ap.rotation = playdate.getCrankTicks(100)
     gfx.drawLine(ap.x - 10, ap.y + 20, ap.x + 20, ap.y + 20)
     playdate.drawFPS()
+    PuckPos.x, PuckPos.y = puck.x, puck.y
+    setClosestOpponent()
 end
 
 -- puck:remove()

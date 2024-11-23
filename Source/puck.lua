@@ -8,7 +8,7 @@ local puckImg = gfx.image.new('img/small_puck')
 local HIT_FORCE = 0.5
 local BOUNCE_VELOCITY = 0.9
 local ICE_FRICTION = 0.05
-local CONTACT_JUMP = 0.16
+local CONTACT_JUMP = 0.18
 local magnitude
 local vector
 local direction
